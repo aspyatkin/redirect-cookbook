@@ -1,0 +1,49 @@
+server {
+  listen [::]:80;
+  listen 80;
+
+  server_name <%= @fqdn %>;
+
+  location / {
+    return 301 https://<%= @fqdn %>$request_uri;
+  }
+}
+
+server {
+  listen [::]:443 ssl http2;
+  listen 443 ssl http2;
+
+  server_name <%= @fqdn %>;
+
+  ssl_certificate <%= @ssl_certificate %>;
+  ssl_certificate_key <%= @ssl_certificate_key %>;
+
+  access_log <%= @access_log %>;
+  error_log <%= @error_log %>;
+
+  more_set_headers 'Strict-Transport-Security: max-age=<%= @hsts_max_age %>';
+  more_set_headers 'X-Frame-Options: DENY';
+
+  <% if @oscp_stapling %>
+  ssl_stapling on;
+  ssl_stapling_verify on;
+  resolver 8.8.8.8 8.8.4.4 valid=300s;
+  resolver_timeout 5s;
+  <% end %>
+
+  <% if @scts %>
+  ssl_ct on;
+  ssl_ct_static_scts <%= @scts_dir %>;
+  <% end %>
+
+  <% if @hpkp && @hpkp_pins.size > 0 %>
+  more_set_headers 'Public-Key-Pins: <%= @hpkp_pins.map{ |pin| "pin-sha256=\"#{pin}\"" }.join '; ' %>; max-age=<%= @hpkp_max_age %>;';
+  <% end %>
+
+  keepalive_timeout 300;
+  charset utf-8;
+
+  location / {
+    return <%= @permanent ? '301' : '302' %> https://<%= @target %>;
+  }
+}

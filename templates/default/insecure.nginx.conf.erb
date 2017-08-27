@@ -1,0 +1,15 @@
+server {
+  listen [::]:80;
+  listen 80;
+
+  server_name <%= @fqdn %>;
+
+  access_log <%= @access_log %>;
+  error_log <%= @error_log %>;
+
+  charset utf-8;
+
+  location / {
+    return <%= @permanent ? '301' : '302' %> http://<%= @target %>;
+  }
+}
