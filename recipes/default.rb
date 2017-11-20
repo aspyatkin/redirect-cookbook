@@ -5,6 +5,7 @@ node['redirect'].to_h.fetch('hosts', []).each do |item|
     target item['target']
     secure item.fetch('secure', true)
     permanent item.fetch('permanent', false)
+    pass_request_uri item.fetch('pass_request_uri', false)
     action :create
   end
 end

@@ -6,6 +6,7 @@ property :fqdn, String, name_property: true
 property :target, String, required: true
 property :secure, [TrueClass, FalseClass], default: true
 property :permanent, [TrueClass, FalseClass], default: false
+property :pass_request_uri, [TrueClass, FalseClass], default: false
 
 default_action :create
 
@@ -25,6 +26,7 @@ action :create do
         fqdn: fqdn,
         target: new_resource.target,
         permanent: new_resource.permanent,
+        pass_request_uri: new_resource.pass_request_uri,
         ssl_certificate: tls_item.certificate_path,
         ssl_certificate_key: tls_item.certificate_private_key_path,
         hsts_max_age: node[id]['hsts_max_age'],
@@ -47,6 +49,7 @@ action :create do
         fqdn: fqdn,
         target: new_resource.target,
         permanent: new_resource.permanent,
+        pass_request_uri: new_resource.pass_request_uri,
         access_log: ::File.join(node['nginx']['log_dir'], "#{fqdn}_access.log"),
         error_log: ::File.join(node['nginx']['log_dir'], "#{fqdn}_error.log")
       )

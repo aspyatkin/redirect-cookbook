@@ -1,4 +1,7 @@
 # redirect-cookbook
+[![Chef cookbook](https://img.shields.io/cookbook/v/redirect.svg?style=flat-square)]()
+[![license](https://img.shields.io/github/license/aspyatkin/redirect-cookbook.svg?style=flat-square)]()
+
 Create Nginx host to redirect to another website
 
 ## Usage
@@ -8,8 +11,9 @@ Create Nginx host to redirect to another website
 ```ruby
 redirect_host 'www.domain.tld' do
   target 'domain.tld'
-  secure true  # Redirect to HTTPS
-  permanent false  # Either 301 or 302 HTTP code
+  secure true  # Redirect to HTTPS (default: true)
+  permanent false  # Either 301 or 302 HTTP code (default: false)
+  pass_request_uri true  # redirect with path and arguments (default: false)
 end
 ```
 
@@ -24,7 +28,8 @@ Add `recipe[redirect::default]` to your run list and specify redirect hosts in n
         "fqdn": "www.domain.tld",
         "target": "domain.tld",
         "secure": true,
-        "permanent": false
+        "permanent": false,
+        "pass_request_uri": true
       }
     ]
   }
