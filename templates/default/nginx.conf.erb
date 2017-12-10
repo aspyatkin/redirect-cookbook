@@ -1,3 +1,4 @@
+<% if @secure %>
 server {
   listen [::]:80;
   listen 80;
@@ -8,18 +9,40 @@ server {
     return 301 https://<%= @fqdn %>$request_uri;
   }
 }
+<% end %>
 
 server {
+  <% if @secure %>
   listen [::]:443 ssl http2;
   listen 443 ssl http2;
+  <% else %>
+  listen [::]:80;
+  listen 80;
+  <% end %>
 
   server_name <%= @fqdn %>;
 
-  ssl_certificate <%= @ssl_certificate %>;
-  ssl_certificate_key <%= @ssl_certificate_key %>;
-
   access_log <%= @access_log %>;
   error_log <%= @error_log %>;
+
+  <% if @secure %>
+  <% if @scts %>
+  ssl_ct on;
+  <% end %>
+
+  ssl_certificate <%= @ssl_rsa_certificate %>;
+  ssl_certificate_key <%= @ssl_rsa_certificate_key %>;
+  <% if @scts %>
+  ssl_ct_static_scts <%= @scts_rsa_dir %>;
+  <% end %>
+
+  <% if @ec_certificates %>
+  ssl_certificate <%= @ssl_ec_certificate %>;
+  ssl_certificate_key <%= @ssl_ec_certificate_key %>;
+  <% if @scts %>
+  ssl_ct_static_scts <%= @scts_ec_dir %>;
+  <% end %>
+  <% end %>
 
   more_set_headers 'Strict-Transport-Security: max-age=<%= @hsts_max_age %>';
   more_set_headers 'X-Frame-Options: DENY';
@@ -31,19 +54,15 @@ server {
   resolver_timeout 5s;
   <% end %>
 
-  <% if @scts %>
-  ssl_ct on;
-  ssl_ct_static_scts <%= @scts_dir %>;
-  <% end %>
-
   <% if @hpkp && @hpkp_pins.size > 0 %>
   more_set_headers 'Public-Key-Pins: <%= @hpkp_pins.map{ |pin| "pin-sha256=\"#{pin}\"" }.join '; ' %>; max-age=<%= @hpkp_max_age %>;';
   <% end %>
 
   keepalive_timeout 300;
+  <% end %>
   charset utf-8;
 
   location / {
-    return <%= @permanent ? '301' : '302' %> https://<%= @target %><%= @pass_request_uri ? '$request_uri' : '' %>;
+    return <%= @permanent ? '301' : '302' %> http<%= @secure ? 's' : '' %>://<%= @target %><%= @pass_request_uri ? '$request_uri' : '' %>;
   }
 }
