@@ -29,6 +29,7 @@ action :create do
     end
 
     tls_rsa_item = ::ChefCookbook::TLS.new(node).rsa_certificate_entry(new_resource.fqdn)
+    tls_ec_item = nil
     is_development = node.chef_environment.start_with?('development')
 
     ngx_vhost_variables.merge!({
@@ -36,7 +37,6 @@ action :create do
       ssl_rsa_certificate_key: tls_rsa_item.certificate_private_key_path,
       hsts_max_age: node[id]['hsts_max_age'],
       oscp_stapling: !is_development,
-      scts: !is_development,
       scts_rsa_dir: tls_rsa_item.scts_dir,
       hpkp: !is_development,
       hpkp_pins: tls_rsa_item.hpkp_pins,
@@ -56,6 +56,11 @@ action :create do
         hpkp_pins: (ngx_vhost_variables[:hpkp_pins] + tls_ec_item.hpkp_pins).uniq,
       })
     end
+
+    has_scts = tls_rsa_item.has_scts? && (tls_ec_item.nil? ? true : tls_ec_item.has_scts?)
+    ngx_vhost_variables.merge!({
+      scts: has_scts
+    })
   end
 
   nginx_site fqdn do
