@@ -1,22 +1,28 @@
 <% if @secure %>
 server {
+  <% if @listen_ipv6 %>
   listen [::]:80;
+  <% end %>
   listen 80;
 
   server_name <%= @fqdn %>;
 
   location / {
-    return 301 https://<%= @fqdn %>$request_uri;
+    return 301 https://$server_name$request_uri;
   }
 }
 <% end %>
 
 server {
   <% if @secure %>
+  <% if @listen_ipv6 %>
   listen [::]:443 ssl http2;
+  <% end %>
   listen 443 ssl http2;
   <% else %>
+  <% if @listen_ipv6 %>
   listen [::]:80;
+  <% end %>
   listen 80;
   <% end %>
 
@@ -44,8 +50,7 @@ server {
   <% end %>
   <% end %>
 
-  more_set_headers 'Strict-Transport-Security: max-age=<%= @hsts_max_age %>';
-  more_set_headers 'X-Frame-Options: DENY';
+  add_header Strict-Transport-Security 'max-age=<%= @hsts_max_age %>' always;
 
   <% if @oscp_stapling %>
   ssl_stapling on;
@@ -55,7 +60,7 @@ server {
   <% end %>
 
   <% if @hpkp && @hpkp_pins.size > 0 %>
-  more_set_headers 'Public-Key-Pins: <%= @hpkp_pins.map{ |pin| "pin-sha256=\"#{pin}\"" }.join '; ' %>; max-age=<%= @hpkp_max_age %>;';
+  add_header Public-Key-Pins '<%= @hpkp_pins.map{ |pin| "pin-sha256=\"#{pin}\"" }.join '; ' %>; max-age=<%= @hpkp_max_age %>;' always;
   <% end %>
 
   keepalive_timeout 300;

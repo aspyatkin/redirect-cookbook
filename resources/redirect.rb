@@ -4,6 +4,7 @@ resource_name :redirect_host
 
 property :fqdn, String, name_property: true
 property :target, String, required: true
+property :listen_ipv6, [TrueClass, FalseClass], default: true
 property :secure, [TrueClass, FalseClass], default: true
 property :permanent, [TrueClass, FalseClass], default: false
 property :pass_request_uri, [TrueClass, FalseClass], default: false
@@ -15,6 +16,7 @@ action :create do
   ngx_vhost_variables = {
     fqdn: fqdn,
     target: new_resource.target,
+    listen_ipv6: new_resource.listen_ipv6,
     permanent: new_resource.permanent,
     pass_request_uri: new_resource.pass_request_uri,
     access_log: ::File.join(node['nginx']['log_dir'], "#{fqdn}_access.log"),
