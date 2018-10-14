@@ -14,13 +14,13 @@ default_action :create
 
 action :create do
   ngx_vhost_variables = {
-    fqdn: fqdn,
+    fqdn: new_resource.fqdn,
     target: new_resource.target,
     listen_ipv6: new_resource.listen_ipv6,
     permanent: new_resource.permanent,
     pass_request_uri: new_resource.pass_request_uri,
-    access_log: ::File.join(node['nginx']['log_dir'], "#{fqdn}_access.log"),
-    error_log: ::File.join(node['nginx']['log_dir'], "#{fqdn}_error.log"),
+    access_log: ::File.join(node['nginx']['log_dir'], "#{new_resource.fqdn}_access.log"),
+    error_log: ::File.join(node['nginx']['log_dir'], "#{new_resource.fqdn}_error.log"),
     secure: new_resource.secure,
     ec_certificates: new_resource.ec_certificates
   }
@@ -65,7 +65,7 @@ action :create do
     })
   end
 
-  nginx_site fqdn do
+  nginx_site new_resource.fqdn do
     cookbook id
     template 'nginx.conf.erb'
     variables ngx_vhost_variables
