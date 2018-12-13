@@ -28,8 +28,12 @@ server {
 
   server_name <%= @fqdn %>;
 
-  access_log <%= @access_log %>;
-  error_log <%= @error_log %>;
+  <% if @access_log_options == 'off' %>
+  access_log off;
+  <% else %>
+  access_log <%= @access_log %><% unless @access_log_options.empty? %> <%= @access_log_options %><% end %>;
+  <% end %>
+  error_log <%= @error_log %><% unless @error_log_options.empty? %> <%= @error_log_options %><% end %>;
 
   <% if @secure %>
   <% if @scts %>

@@ -9,6 +9,8 @@ property :secure, [TrueClass, FalseClass], default: true
 property :permanent, [TrueClass, FalseClass], default: false
 property :pass_request_uri, [TrueClass, FalseClass], default: false
 property :ec_certificates, [TrueClass, FalseClass], default: false
+property :access_log_options, String, default: 'combined'
+property :error_log_options, String, default: 'error'
 
 default_action :create
 
@@ -20,7 +22,9 @@ action :create do
     permanent: new_resource.permanent,
     pass_request_uri: new_resource.pass_request_uri,
     access_log: ::File.join(node['nginx']['log_dir'], "#{new_resource.fqdn}_access.log"),
+    access_log_options: new_resource.access_log_options,
     error_log: ::File.join(node['nginx']['log_dir'], "#{new_resource.fqdn}_error.log"),
+    error_log_options: new_resource.error_log_options,
     secure: new_resource.secure,
     ec_certificates: new_resource.ec_certificates
   }
