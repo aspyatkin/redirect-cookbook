@@ -12,6 +12,7 @@ Create Nginx host to redirect to another website
 redirect_host 'www.domain.tld' do
   target 'domain.tld'
   listen_ipv6 true  # listen on IPv6 address (default: true)
+  default_server true  # include 'default_server' option in Nginx listen directive (default: false)
   secure true  # redirect to HTTPS (default: true)
   permanent false  # either 301 or 302 HTTP code (default: false)
   pass_request_uri true  # redirect with path and arguments (default: false)
@@ -32,6 +33,7 @@ Add `recipe[redirect::default]` to your run list and specify redirect hosts in n
         "fqdn": "www.domain.tld",
         "target": "domain.tld",
         "listen_ipv6": true,
+        "default_server": true,
         "secure": true,
         "permanent": false,
         "pass_request_uri": true,

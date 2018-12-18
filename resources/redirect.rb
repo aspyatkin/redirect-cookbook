@@ -5,6 +5,7 @@ resource_name :redirect_host
 property :fqdn, String, name_property: true
 property :target, String, required: true
 property :listen_ipv6, [TrueClass, FalseClass], default: true
+property :default_server, [TrueClass, FalseClass], default: false
 property :secure, [TrueClass, FalseClass], default: true
 property :permanent, [TrueClass, FalseClass], default: false
 property :pass_request_uri, [TrueClass, FalseClass], default: false
@@ -19,6 +20,7 @@ action :create do
     fqdn: new_resource.fqdn,
     target: new_resource.target,
     listen_ipv6: new_resource.listen_ipv6,
+    default_server: new_resource.default_server,
     permanent: new_resource.permanent,
     pass_request_uri: new_resource.pass_request_uri,
     access_log: ::File.join(node['nginx']['log_dir'], "#{new_resource.fqdn}_access.log"),

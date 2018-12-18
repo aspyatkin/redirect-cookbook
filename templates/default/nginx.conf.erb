@@ -1,9 +1,9 @@
 <% if @secure %>
 server {
   <% if @listen_ipv6 %>
-  listen [::]:80;
+  listen [::]:80<% if @default_server %> default_server<% end %>;
   <% end %>
-  listen 80;
+  listen 80<% if @default_server %> default_server<% end %>;
 
   server_name <%= @fqdn %>;
 
@@ -16,14 +16,14 @@ server {
 server {
   <% if @secure %>
   <% if @listen_ipv6 %>
-  listen [::]:443 ssl http2;
+  listen [::]:443 ssl http2<% if @default_server %> default_server<% end %>;
   <% end %>
-  listen 443 ssl http2;
+  listen 443 ssl http2<% if @default_server %> default_server<% end %>;
   <% else %>
   <% if @listen_ipv6 %>
-  listen [::]:80;
+  listen [::]:80<% if @default_server %> default_server<% end %>;
   <% end %>
-  listen 80;
+  listen 80<% if @default_server %> default_server<% end %>;
   <% end %>
 
   server_name <%= @fqdn %>;
