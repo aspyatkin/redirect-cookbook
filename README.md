@@ -16,7 +16,6 @@ redirect_host 'www.domain.tld' do
   secure true  # redirect to HTTPS (default: true)
   permanent false  # either 301 or 302 HTTP code (default: false)
   pass_request_uri true  # redirect with path and arguments (default: false)
-  ec_certificates true  # use EC certificates along with RSA ones (default: false)
   access_log_options 'off'  # Nginx access_log options string (default: 'combined', use 'off' to disable access_log)
   error_log_options 'crit'  # Nginx error_log level (default: 'error')
 end
@@ -37,7 +36,6 @@ Add `recipe[redirect::default]` to your run list and specify redirect hosts in n
         "secure": true,
         "permanent": false,
         "pass_request_uri": true,
-        "ec_certificates": true,
         "access_log_options": "off",
         "error_log_options": "crit"
       }

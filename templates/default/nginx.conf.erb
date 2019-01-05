@@ -62,12 +62,6 @@ server {
   resolver 8.8.8.8 8.8.4.4 valid=300s;
   resolver_timeout 5s;
   <% end %>
-
-  <% if @hpkp && @hpkp_pins.size > 0 %>
-  add_header Public-Key-Pins '<%= @hpkp_pins.map{ |pin| "pin-sha256=\"#{pin}\"" }.join '; ' %>; max-age=<%= @hpkp_max_age %>;' always;
-  <% end %>
-
-  keepalive_timeout 300;
   <% end %>
   charset utf-8;
 
