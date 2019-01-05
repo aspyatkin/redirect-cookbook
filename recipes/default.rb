@@ -8,7 +8,6 @@ node['redirect'].to_h.fetch('hosts', []).each do |item|
     secure item.fetch('secure', true)
     permanent item.fetch('permanent', false)
     pass_request_uri item.fetch('pass_request_uri', false)
-    ec_certificates item.fetch('ec_certificates', false)
     access_log_options item.fetch('access_log_options', 'combined')
     error_log_options item.fetch('error_log_options', 'error')
     action :create
