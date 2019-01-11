@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2019-01-10
+### Added
+- Introduced a new `redirect_host` resource property: `path`.
+- Introduced a new `redirect_host` resource property: `hsts_max_age`.
+- Introduced a new `redirect_host` resource property: `oscp_stapling`.
+- Introduced a new `redirect_host` resource property: `resolvers`.
+- Introduced a new `redirect_host` resource property: `resolver_valid`.
+- Introduced a new `redirect_host` resource property: `resolver_timeout`.
+
+### Removed
+- Deleted `node['redirect']['hsts_max_age']`.
+- Static CT entries will no longer be configured.
+
+## [1.5.1] - 2019-01-05
+### Fixed
+- Fixed the default recipe.
+
 ## [1.5.0] - 2019-01-04
 ### Removed
 - HPKP Header will no longer be set.

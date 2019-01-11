@@ -36,22 +36,12 @@ server {
   error_log <%= @error_log %><% unless @error_log_options.empty? %> <%= @error_log_options %><% end %>;
 
   <% if @secure %>
-  <% if @scts %>
-  ssl_ct on;
-  <% end %>
-
   ssl_certificate <%= @ssl_rsa_certificate %>;
   ssl_certificate_key <%= @ssl_rsa_certificate_key %>;
-  <% if @scts %>
-  ssl_ct_static_scts <%= @scts_rsa_dir %>;
-  <% end %>
 
   <% if @ec_certificates %>
   ssl_certificate <%= @ssl_ec_certificate %>;
   ssl_certificate_key <%= @ssl_ec_certificate_key %>;
-  <% if @scts %>
-  ssl_ct_static_scts <%= @scts_ec_dir %>;
-  <% end %>
   <% end %>
 
   add_header Strict-Transport-Security 'max-age=<%= @hsts_max_age %>' always;
@@ -59,13 +49,13 @@ server {
   <% if @oscp_stapling %>
   ssl_stapling on;
   ssl_stapling_verify on;
-  resolver 8.8.8.8 8.8.4.4 valid=300s;
-  resolver_timeout 5s;
+  resolver <%= @resolvers.join(' ') %> valid=<%= @resolver_valid %>s;
+  resolver_timeout <%= @resolver_timeout %>s;
   <% end %>
   <% end %>
   charset utf-8;
 
   location / {
-    return <%= @permanent ? '301' : '302' %> http<%= @secure ? 's' : '' %>://<%= @target %><%= @pass_request_uri ? '$request_uri' : '' %>;
+    return <%= @permanent ? '301' : '302' %> http<%= @secure ? 's' : '' %>://<%= @target %><%= @pass_request_uri ? '$request_uri' : @path %>;
   }
 }
