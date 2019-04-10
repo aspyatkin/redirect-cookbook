@@ -1,5 +1,3 @@
-id = 'redirect'
-
 resource_name :redirect_host
 
 property :fqdn, String, name_property: true
@@ -10,7 +8,7 @@ property :default_server, [TrueClass, FalseClass], default: false
 property :secure, [TrueClass, FalseClass], default: true
 property :hsts_max_age, Integer, default: 15_768_000
 property :oscp_stapling, [TrueClass, FalseClass], default: true
-property :resolvers, Array, default: %w(8.8.8.8 1.1.1.1 8.8.4.4 1.0.0.1)
+property :resolvers, Array, default: %w[8.8.8.8 1.1.1.1 8.8.4.4 1.0.0.1]
 property :resolver_valid, Integer, default: 600
 property :resolver_timeout, Integer, default: 10
 property :permanent, [TrueClass, FalseClass], default: false
@@ -29,9 +27,7 @@ action :create do
     default_server: new_resource.default_server,
     permanent: new_resource.permanent,
     pass_request_uri: new_resource.pass_request_uri,
-    access_log: ::File.join(node['nginx']['log_dir'], "#{new_resource.fqdn}_access.log"),
     access_log_options: new_resource.access_log_options,
-    error_log: ::File.join(node['nginx']['log_dir'], "#{new_resource.fqdn}_error.log"),
     error_log_options: new_resource.error_log_options,
     secure: new_resource.secure
   }
@@ -43,10 +39,9 @@ action :create do
 
     tls_helper = ::ChefCookbook::TLS.new(node)
     tls_rsa_item = tls_helper.rsa_certificate_entry(new_resource.fqdn)
-    tls_ec_item = nil
     ec_certificates = tls_helper.has_ec_certificate?(new_resource.fqdn)
 
-    ngx_vhost_variables.merge!({
+    ngx_vhost_variables.merge!(
       ec_certificates: ec_certificates,
       ssl_rsa_certificate: tls_rsa_item.certificate_path,
       ssl_rsa_certificate_key: tls_rsa_item.certificate_private_key_path,
@@ -55,7 +50,7 @@ action :create do
       resolvers: new_resource.resolvers,
       resolver_valid: new_resource.resolver_valid,
       resolver_timeout: new_resource.resolver_timeout
-    })
+    )
 
     if ec_certificates
       tls_ec_certificate new_resource.fqdn do
@@ -63,17 +58,22 @@ action :create do
       end
 
       tls_ec_item = tls_helper.ec_certificate_entry(new_resource.fqdn)
-      ngx_vhost_variables.merge!({
+      ngx_vhost_variables.merge!(
         ssl_ec_certificate: tls_ec_item.certificate_path,
         ssl_ec_certificate_key: tls_ec_item.certificate_private_key_path
-      })
+      )
     end
   end
 
-  nginx_site new_resource.fqdn do
-    cookbook id
+  nginx_vhost new_resource.fqdn do
+    cookbook 'redirect'
     template 'nginx.conf.erb'
-    variables ngx_vhost_variables
+    variables(lazy {
+      ngx_vhost_variables.merge(
+        access_log: ::File.join(node.run_state['nginx']['log_dir'], "#{new_resource.fqdn}_access.log"),
+        error_log: ::File.join(node.run_state['nginx']['log_dir'], "#{new_resource.fqdn}_error.log")
+      )
+    })
     action :enable
   end
 end
