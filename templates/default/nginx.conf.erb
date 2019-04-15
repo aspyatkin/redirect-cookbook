@@ -36,12 +36,9 @@ server {
   error_log <%= @error_log %><% unless @error_log_options.empty? %> <%= @error_log_options %><% end %>;
 
   <% if @secure %>
-  ssl_certificate <%= @ssl_rsa_certificate %>;
-  ssl_certificate_key <%= @ssl_rsa_certificate_key %>;
-
-  <% if @ec_certificates %>
-  ssl_certificate <%= @ssl_ec_certificate %>;
-  ssl_certificate_key <%= @ssl_ec_certificate_key %>;
+  <% @certificate_entries.each do |item| %>
+  ssl_certificate <%= item.certificate_path %>; # CRC32: <%= item.certificate_checksum %>
+  ssl_certificate_key <%= item.certificate_private_key_path %>; # CRC32: <%= item.certificate_private_key_checksum %>
   <% end %>
 
   add_header Strict-Transport-Security 'max-age=<%= @hsts_max_age %>' always;

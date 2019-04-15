@@ -19,7 +19,7 @@ property :error_log_options, String, default: 'error'
 default_action :create
 
 action :create do
-  ngx_vhost_variables = {
+  vhost_vars = {
     fqdn: new_resource.fqdn,
     target: new_resource.target,
     path: new_resource.path,
@@ -29,22 +29,12 @@ action :create do
     pass_request_uri: new_resource.pass_request_uri,
     access_log_options: new_resource.access_log_options,
     error_log_options: new_resource.error_log_options,
-    secure: new_resource.secure
+    secure: new_resource.secure,
+    certificate_entries: []
   }
 
   if new_resource.secure
-    tls_rsa_certificate new_resource.fqdn do
-      action :deploy
-    end
-
-    tls_helper = ::ChefCookbook::TLS.new(node)
-    tls_rsa_item = tls_helper.rsa_certificate_entry(new_resource.fqdn)
-    ec_certificates = tls_helper.has_ec_certificate?(new_resource.fqdn)
-
-    ngx_vhost_variables.merge!(
-      ec_certificates: ec_certificates,
-      ssl_rsa_certificate: tls_rsa_item.certificate_path,
-      ssl_rsa_certificate_key: tls_rsa_item.certificate_private_key_path,
+    vhost_vars.merge!(
       hsts_max_age: new_resource.hsts_max_age,
       oscp_stapling: new_resource.oscp_stapling,
       resolvers: new_resource.resolvers,
@@ -52,16 +42,19 @@ action :create do
       resolver_timeout: new_resource.resolver_timeout
     )
 
-    if ec_certificates
+    tls_rsa_certificate new_resource.fqdn do
+      action :deploy
+    end
+
+    tls = ::ChefCookbook::TLS.new(node)
+    vhost_vars[:certificate_entries] << tls.rsa_certificate_entry(new_resource.fqdn)
+
+    if tls.has_ec_certificate?(new_resource.fqdn)
       tls_ec_certificate new_resource.fqdn do
         action :deploy
       end
 
-      tls_ec_item = tls_helper.ec_certificate_entry(new_resource.fqdn)
-      ngx_vhost_variables.merge!(
-        ssl_ec_certificate: tls_ec_item.certificate_path,
-        ssl_ec_certificate_key: tls_ec_item.certificate_private_key_path
-      )
+      vhost_vars[:certificate_entries] << tls.ec_certificate_entry(new_resource.fqdn)
     end
   end
 
@@ -69,7 +62,7 @@ action :create do
     cookbook 'redirect'
     template 'nginx.conf.erb'
     variables(lazy {
-      ngx_vhost_variables.merge(
+      vhost_vars.merge(
         access_log: ::File.join(node.run_state['nginx']['log_dir'], "#{new_resource.fqdn}_access.log"),
         error_log: ::File.join(node.run_state['nginx']['log_dir'], "#{new_resource.fqdn}_error.log")
       )
