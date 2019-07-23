@@ -4,7 +4,7 @@ maintainer_email 'aspyatkin@gmail.com'
 license 'MIT'
 description 'Create Nginx host to redirect to another website'
 long_description ::IO.read(::File.join(::File.dirname(__FILE__), 'README.md'))
-version '2.1.0'
+version '2.1.1'
 
 scm_url = 'https://github.com/aspyatkin/redirect-cookbook'
 source_url scm_url if respond_to?(:source_url)

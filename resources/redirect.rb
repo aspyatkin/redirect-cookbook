@@ -11,6 +11,7 @@ property :oscp_stapling, [TrueClass, FalseClass], default: true
 property :resolvers, Array, default: %w[8.8.8.8 1.1.1.1 8.8.4.4 1.0.0.1]
 property :resolver_valid, Integer, default: 600
 property :resolver_timeout, Integer, default: 10
+property :resolver_ipv6, [TrueClass, FalseClass], default: false
 property :permanent, [TrueClass, FalseClass], default: false
 property :pass_request_uri, [TrueClass, FalseClass], default: false
 property :access_log_options, String, default: 'combined'
@@ -39,7 +40,8 @@ action :create do
       oscp_stapling: new_resource.oscp_stapling,
       resolvers: new_resource.resolvers,
       resolver_valid: new_resource.resolver_valid,
-      resolver_timeout: new_resource.resolver_timeout
+      resolver_timeout: new_resource.resolver_timeout,
+      resolver_ipv6: new_resource.resolver_ipv6
     )
 
     tls_rsa_certificate new_resource.fqdn do

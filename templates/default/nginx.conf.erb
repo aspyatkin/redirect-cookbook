@@ -46,7 +46,7 @@ server {
   <% if @oscp_stapling %>
   ssl_stapling on;
   ssl_stapling_verify on;
-  resolver <%= @resolvers.join(' ') %> valid=<%= @resolver_valid %>s;
+  resolver <%= @resolvers.join(' ') %> valid=<%= @resolver_valid %>s ipv6=<%= @resolver_ipv6 ? 'on' : 'off' %>;
   resolver_timeout <%= @resolver_timeout %>s;
   <% end %>
   <% end %>

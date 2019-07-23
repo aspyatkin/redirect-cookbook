@@ -19,6 +19,7 @@ redirect_host 'www.domain.tld' do
   resolvers %w(8.8.8.8 1.1.1.1)  # when secure and oscp_stapling are enabled, set up resolvers (default: Google and CloudFlare DNS servers)
   resolver_valid 300  # cache name resolution results for the specified number of seconds (default: 600)
   resolver_timeout 5  # set timeout for the name resolution (default: 10)
+  resolver_ipv6 true  # look up both IPv4 and IPv6 addresses while resolving (default: false)
   permanent false  # either 301 or 302 HTTP code (default: false)
   pass_request_uri true  # redirect with path and arguments (default: false)
   access_log_options 'off'  # Nginx access_log options string (default: 'combined', use 'off' to disable access_log)
