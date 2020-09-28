@@ -16,6 +16,7 @@ property :permanent, [TrueClass, FalseClass], default: false
 property :pass_request_uri, [TrueClass, FalseClass], default: false
 property :access_log_options, String, default: 'combined'
 property :error_log_options, String, default: 'error'
+property :vlt_provider, Proc, default: lambda { nil }
 
 default_action :create
 
@@ -45,14 +46,16 @@ action :create do
     )
 
     tls_rsa_certificate new_resource.fqdn do
+      vlt_provider new_resource.vlt_provider
       action :deploy
     end
 
-    tls = ::ChefCookbook::TLS.new(node)
+    tls = ::ChefCookbook::TLS.new(node, vlt_provider: new_resource.vlt_provider)
     vhost_vars[:certificate_entries] << tls.rsa_certificate_entry(new_resource.fqdn)
 
     if tls.has_ec_certificate?(new_resource.fqdn)
       tls_ec_certificate new_resource.fqdn do
+        vlt_provider new_resource.vlt_provider
         action :deploy
       end
 
