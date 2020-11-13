@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2020-11-11
+### Added
+- Introduced a new `redirect_host` resource property: `vlt_format`.
+
+### Changed
+- Update [tls](https://supermarket.chef.io/cookbooks/tls) dependency to version 4.1.
+
 ## [3.0.0] - 2020-09-28
 ### Added
 - Introduced a new `redirect_host` resource property: `vlt_provider`.
