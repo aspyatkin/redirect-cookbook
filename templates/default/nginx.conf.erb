@@ -43,7 +43,7 @@ server {
 
   add_header Strict-Transport-Security 'max-age=<%= @hsts_max_age %>' always;
 
-  <% if @oscp_stapling %>
+  <% if @ocsp_stapling %>
   ssl_stapling on;
   ssl_stapling_verify on;
   resolver <%= @resolvers.join(' ') %> valid=<%= @resolver_valid %>s ipv6=<%= @resolver_ipv6 ? 'on' : 'off' %>;
