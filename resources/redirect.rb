@@ -1,3 +1,4 @@
+provides :redirect_host
 resource_name :redirect_host
 
 property :fqdn, String, name_property: true
